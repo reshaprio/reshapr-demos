@@ -1,0 +1,44 @@
+{
+  "name": "reshapr-demos",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Demo scripts and MCP app examples for reShapr.",
+  "license": "MIT",
+  "type": "module",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "check": "npm run build --workspaces",
+    "start:open-meteo": "npm --workspace @reshapr-demos/open-meteo run start",
+    "start:github-user": "npm --workspace @reshapr-demos/github-user run start",
+    "start:github-user-prompts": "npm --workspace @reshapr-demos/github-user-prompts run start",
+    "demo:00": "bash demos/00-install-cli/demo.sh",
+    "demo:01": "bash demos/01-run-local/demo.sh",
+    "demo:02": "bash demos/02-open-meteo-openapi/demo.sh",
+    "demo:03": "bash demos/03-github-graphql-context/demo.sh",
+    "demo:04": "bash demos/04-github-graphql-prompts/demo.sh",
+    "demo:05": "bash demos/05-github-mcp-app/demo.sh",
+    "demo:06": "bash demos/06-github-mcp-app-prompts/demo.sh",
+    "demo:07": "bash demos/07-open-meteo-mcpapp/demo.sh"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/ext-apps": "^1.0.0",
+    "@modelcontextprotocol/sdk": "^1.24.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "ts-to-zod": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.0",
+    "@types/node": "22.19.5",
+    "concurrently": "^9.2.1",
+    "cross-env": "^10.1.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vite": "^6.0.0",
+    "vite-plugin-singlefile": "^2.3.0"
+  }
+}

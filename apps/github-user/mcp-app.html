@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GitHub User App</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica', Arial, sans-serif;
+        padding: 20px;
+        background-color: #f6f8fa;
+      }
+
+      .user-profile {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 16px;
+        background: white;
+        border: 1px solid #d0d7de;
+        border-radius: 6px;
+        padding: 16px;
+        max-width: 800px;
+        margin: 0 auto;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      }
+
+      .profile-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      .profile-info {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-width: 0;
+      }
+
+      .profile-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: #24292f;
+      }
+
+      .profile-username {
+        font-size: 14px;
+        color: #57606a;
+      }
+
+      .profile-bio {
+        font-size: 14px;
+        color: #24292f;
+        line-height: 1.5;
+        margin-top: 4px;
+      }
+
+      .profile-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        font-size: 14px;
+        color: #57606a;
+        margin-top: 8px;
+      }
+
+      .profile-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .profile-followers {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #d0d7de;
+      }
+
+      .profile-followers-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: #57606a;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+
+      .profile-followers-list {
+        font-size: 14px;
+        color: #24292f;
+        line-height: 1.5;
+      }
+
+      @media (max-width: 600px) {
+        .user-profile {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+
+        .profile-avatar {
+          width: 32px;
+          height: 32px;
+          margin: 0 auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="user-profile">
+      <div>
+        <img src="https://avatars.githubusercontent.com/u/1?v=4" alt="Profile Picture" class="profile-avatar" id="avatar">
+      </div>
+      <div class="profile-info">
+        <div class="profile-name" id="name">Loading...</div>
+        <div class="profile-username" id="username">@username</div>
+        <div class="profile-bio" id="bio">Loading...</div>
+        <div class="profile-meta">
+          <div class="profile-meta-item">
+            <span>📍</span>
+            <span id="location">Location</span>
+          </div>
+          <div class="profile-meta-item">
+            <span>🔗</span>
+            <span id="blog">Website</span>
+          </div>
+        </div>
+        <div class="profile-followers">
+          <div class="profile-followers-title">Latest Followers</div>
+          <div class="profile-followers-list" id="followers">Loading followers...</div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/mcp-app.ts"></script>
+  </body>
+</html>

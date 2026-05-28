@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DEMO_MAGIC_OPTS="-d"
+. "${SCRIPT_DIR}/../../scripts/lib/demo-env.sh"
+
+clear
+
+pei "echo \"Legacy combined demo - GitHub GraphQL API\""
+p "npm install -g @reshapr/reshapr-cli"
+pe "reshapr status"
+pe "reshapr run"
+pe "reshapr status"
+pe "reshapr login -u admin -p ${RESHAPR_PASSWORD} -s ${RESHAPR_URL}"
+pe "reshapr service list"
+pe "code ./resources/github/schema.docs.graphql"
+pe "reshapr import -f ./resources/github/schema.docs.graphql --sn \"${GITHUB_GRAPHQL_SERVICE_NAME}\" --sv ${GITHUB_GRAPHQL_SERVICE_VERSION} --be https://api.github.com/graphql"
+pe "reshapr service list"
+pei "echo \"Now we have the GitHub schema imported into reShapr and can use it with my MCP client app\""
+pe "curl ${RESHAPR_MCP_URL}/mcp/reshapr/GitHub+GraphQL/${GITHUB_GRAPHQL_SERVICE_VERSION} -H 'Content-type: application/json' -X POST -d '{\"jsonrpc\": \"2.0\", \"method\": \"tools/list\", \"params\": {}}' -s | wc -c"
+pe "reshapr import -f ./resources/github/schema.docs.graphql --sn \"${GITHUB_GRAPHQL_SERVICE_NAME}\" --sv ${GITHUB_GRAPHQL_SERVICE_VERSION} --be https://api.github.com/graphql --io '[\"user\"]'"
+pei "echo \"Now we have the GitHub schema imported into reShapr and can use it with my MCP client app\""
+pe "curl ${RESHAPR_MCP_URL}/mcp/reshapr/GitHub+GraphQL/${GITHUB_GRAPHQL_SERVICE_VERSION} -H 'Content-type: application/json' -X POST -d '{\"jsonrpc\": \"2.0\", \"method\": \"tools/list\", \"params\": {}}' -s | wc -c"
+pe "code ./resources/github/custom-tools.yaml"
+pe "reshapr attach -f ./resources/github/custom-tools.yaml"
+pei "echo \"Now we have the GitHub schema imported into reShapr and can use it with my MCP client app\""
+pe "curl ${RESHAPR_MCP_URL}/mcp/reshapr/GitHub+GraphQL/${GITHUB_GRAPHQL_SERVICE_VERSION} -H 'Content-type: application/json' -X POST -d '{\"jsonrpc\": \"2.0\", \"method\": \"tools/list\", \"params\": {}}' -s | wc -c"
+pe "code ./apps/github-user/resources/app.local.yaml"
+pe "npm run start:github-user &"
+pe "reshapr attach -f ./apps/github-user/resources/app.local.yaml"
+pei "echo \"Now we attached my MCP app into reShapr and service 'GitHub GraphQL' and can use it with my MCP client app\""

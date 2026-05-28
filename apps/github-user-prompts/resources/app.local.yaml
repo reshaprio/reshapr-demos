@@ -1,0 +1,16 @@
+apiVersion: reshapr.io/v1alpha1
+kind: Resources
+service:
+  name: GitHub GraphQL
+  version: '20260410'
+resources:
+  'ui://user/mcp-app.html':
+    name: GitHub user prompt launcher
+    description: Launch prompt templates that ask the LLM to use get_user_with_latest_followers
+    mimeType: text/html;profile=mcp-app
+    remoteContent: http://host.docker.internal:3030/mcp-app.html
+    tools:
+      - get_user_with_latest_followers:
+          visibility:
+            - app
+            - model

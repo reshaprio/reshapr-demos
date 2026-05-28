@@ -1,0 +1,23 @@
+apiVersion: reshapr.io/v1alpha1
+kind: CustomTools
+service:
+  name: GitHub GraphQL
+  version: '20260410'
+customTools:
+  get_user_with_latest_followers:
+    tool: user
+    description: Get a user details with the latest followers details
+    input:
+      type: object
+      properties:
+        user:
+          type: string
+          description: The GitHub login of the user to fetch
+      required:
+        - user
+    arguments:
+      login: ${user}
+      __relation_avatarUrl:
+        size: 32
+      __relation_followers:
+        last: 10

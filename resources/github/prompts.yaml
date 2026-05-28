@@ -1,0 +1,38 @@
+apiVersion: reshapr.io/v1alpha1
+kind: Prompts
+service:
+  name: GitHub GraphQL
+  version: '20260410'
+prompts:
+  get_user_profile_with_followers:
+    title: Get a GitHub user profile with their latest followers
+    description: Retrieve the full profile of a GitHub user along with their 10 most recent followers
+    arguments:
+      - name: user
+        description: The GitHub login of the user to look up
+        required: true
+    result: |-
+      Get the profile details and latest followers for the GitHub user '${user}'.
+      The MCP tool to call is 'get_user_with_latest_followers', using '${user}' as the tool argument called 'user'.
+  who_follows_user:
+    title: Who recently followed a GitHub user?
+    description: Find out who are the most recent followers of a given GitHub user
+    arguments:
+      - name: user
+        description: The GitHub login of the user whose followers you want to see
+        required: true
+    result: |-
+      List the most recent followers of the GitHub user '${user}' with their avatar and profile details.
+      The MCP tool to call is 'get_user_with_latest_followers', using '${user}' as the tool argument called 'user'.
+      Focus the response on the followers information.
+  compare_user_followers:
+    title: Show a GitHub user's popularity snapshot
+    description: Get a quick popularity snapshot of a GitHub user by looking at their profile and recent follower activity
+    arguments:
+      - name: user
+        description: The GitHub login of the user to analyze
+        required: true
+    result: |-
+      Get the profile and latest followers for the GitHub user '${user}' to provide a popularity snapshot.
+      The MCP tool to call is 'get_user_with_latest_followers', using '${user}' as the tool argument called 'user'.
+      Summarize the user's profile and highlight who has recently followed them.

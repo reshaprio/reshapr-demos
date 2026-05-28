@@ -1,0 +1,36 @@
+apiVersion: reshapr.io/v1alpha1
+kind: Resources
+service:
+  name: Open-Meteo APIs
+  version: '1.0'
+resources:
+  'ui://info/mcp-app.html':
+    name: Weather Forecast Dashboard
+    description: Interactive weather dashboard using Open-Meteo forecast API with location search and map display
+    mimeType: text/html;profile=mcp-app
+    remoteContent: https://your-public-open-meteo-app.example.com/mcp-app.html
+    _meta:
+      domain: weather-mcp-app.example.com
+      prefersBoarder: true
+      permissions:
+        geolocation: {}
+        clipboardWrite: {}
+      csp:
+        connectDomains:
+          - api.open-meteo.com
+          - geocoding-api.open-meteo.com
+          - open-meteo.com
+        resourceDomains:
+          - cdn.jsdelivr.net
+          - fonts.googleapis.com
+          - fonts.gstatic.com
+        frameDomains:
+          - www.openstreetmap.org
+          - tile.openstreetmap.org
+        baseUriDomains:
+          - weather-mcp-app.example.com
+    tools:
+      - get_v1_forecast:
+          visibility:
+            - app
+            - model

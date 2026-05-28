@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GitHub User App</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica', Arial, sans-serif;
+        padding: 16px;
+        background-color: #f6f8fa;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      /* ── Prompt Selector ── */
+      .prompt-selector {
+        margin-bottom: 16px;
+      }
+
+      .prompt-selector-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: #57606a;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+      }
+
+      .prompt-cards {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+
+      .prompt-card {
+        background: white;
+        border: 2px solid #d0d7de;
+        border-radius: 8px;
+        padding: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: left;
+        font-family: inherit;
+      }
+
+      .prompt-card:hover {
+        border-color: #0969da;
+        box-shadow: 0 2px 8px rgba(9, 105, 218, 0.15);
+      }
+
+      .prompt-card.selected {
+        border-color: #0969da;
+        background: #ddf4ff;
+        box-shadow: 0 0 0 1px #0969da;
+      }
+
+      .prompt-card-icon {
+        font-size: 20px;
+        margin-bottom: 6px;
+      }
+
+      .prompt-card-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: #24292f;
+        margin-bottom: 4px;
+        line-height: 1.3;
+      }
+
+      .prompt-card-desc {
+        font-size: 11px;
+        color: #57606a;
+        line-height: 1.4;
+      }
+
+      /* ── Input Bar ── */
+      .input-bar {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+
+      .input-bar input {
+        flex: 1;
+        padding: 8px 12px;
+        border: 1px solid #d0d7de;
+        border-radius: 6px;
+        font-size: 14px;
+        font-family: inherit;
+        background: white;
+        outline: none;
+        transition: border-color 0.2s ease;
+      }
+
+      .input-bar input:focus {
+        border-color: #0969da;
+        box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.15);
+      }
+
+      .input-bar button {
+        padding: 8px 16px;
+        background: #2da44e;
+        color: white;
+        border: 1px solid rgba(27, 31, 36, 0.15);
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        white-space: nowrap;
+      }
+
+      .input-bar button:hover:not(:disabled) {
+        background: #218838;
+      }
+
+      .input-bar button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* ── Active Prompt Badge ── */
+      .active-prompt-badge {
+        display: none;
+        padding: 12px;
+        background: #ddf4ff;
+        border: 1px solid #54aeff;
+        border-radius: 6px;
+        font-size: 12px;
+        color: #0969da;
+        font-weight: 500;
+      }
+
+      .active-prompt-badge.visible {
+        display: block;
+        animation: fadeIn 0.3s ease;
+      }
+
+      .active-prompt-heading {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 8px;
+      }
+
+      .active-prompt-text {
+        white-space: pre-wrap;
+        color: #24292f;
+        font-size: 13px;
+        font-weight: 400;
+        line-height: 1.5;
+      }
+
+      @media (max-width: 600px) {
+        .prompt-cards {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Prompt Selector -->
+      <div class="prompt-selector">
+        <div class="prompt-selector-title">Choose a prompt</div>
+        <div class="prompt-cards">
+          <button class="prompt-card" data-prompt="get_user_profile_with_followers">
+            <div class="prompt-card-icon">👤</div>
+            <div class="prompt-card-title">User Profile & Followers</div>
+            <div class="prompt-card-desc">Full profile with their 10 most recent followers</div>
+          </button>
+          <button class="prompt-card" data-prompt="who_follows_user">
+            <div class="prompt-card-icon">👥</div>
+            <div class="prompt-card-title">Who Followed Recently?</div>
+            <div class="prompt-card-desc">Focus on the most recent followers of a user</div>
+          </button>
+          <button class="prompt-card" data-prompt="compare_user_followers">
+            <div class="prompt-card-icon">📊</div>
+            <div class="prompt-card-title">Popularity Snapshot</div>
+            <div class="prompt-card-desc">Profile summary with recent follower activity</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Input Bar -->
+      <div class="input-bar">
+        <input type="text" id="user-input" placeholder="Enter a GitHub username…" />
+        <button id="go-btn" disabled>Send Prompt</button>
+      </div>
+
+      <!-- Active Prompt Badge -->
+      <div class="active-prompt-badge" id="active-prompt-badge">
+        <div class="active-prompt-heading">
+          <span>📌</span>
+          <span id="active-prompt-label"></span>
+        </div>
+        <div class="active-prompt-text" id="active-prompt-text"></div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/mcp-app.ts"></script>
+  </body>
+</html>

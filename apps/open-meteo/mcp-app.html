@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather Forecast</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 10px;
+        color: #333;
+      }
+
+      .container {
+        max-width: 480px;
+        margin: 0 auto;
+      }
+
+      .weather-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(10px);
+        margin-bottom: 15px;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .header h1 {
+        font-size: 1.5em;
+        color: #667eea;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .location-info {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        color: #666;
+        font-size: 0.75em;
+        flex-wrap: wrap;
+      }
+
+      .location-info span {
+        background: #f0f0f0;
+        padding: 4px 10px;
+        border-radius: 12px;
+      }
+
+      .map-container {
+        margin: 15px 0;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        height: 200px;
+      }
+
+      .map-container iframe {
+        width: 100%;
+        height: 200px;
+        border: none;
+        display: block;
+      }
+
+      .current-weather {
+        text-align: center;
+        padding: 15px 0;
+        border-bottom: 2px solid #f0f0f0;
+        margin-bottom: 20px;
+      }
+
+      .weather-main {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .weather-icon {
+        font-size: 50px;
+        animation: float 3s ease-in-out infinite;
+      }
+
+      @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+      }
+
+      .temperature {
+        font-size: 2.2em;
+        font-weight: bold;
+        color: #667eea;
+      }
+
+      .weather-description {
+        font-size: 0.95em;
+        color: #666;
+        text-transform: capitalize;
+        white-space: nowrap;
+      }
+
+      .weather-details {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .detail-item {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 12px;
+        border-radius: 12px;
+        color: white;
+        text-align: center;
+      }
+
+      .detail-item .label {
+        font-size: 0.75em;
+        opacity: 0.9;
+        margin-bottom: 4px;
+      }
+
+      .detail-item .value {
+        font-size: 1.3em;
+        font-weight: bold;
+      }
+
+      .hourly-forecast {
+        margin-top: 20px;
+      }
+
+      .hourly-forecast h2 {
+        color: #667eea;
+        margin-bottom: 12px;
+        font-size: 1.1em;
+      }
+
+      .forecast-scroll {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        padding: 8px 0;
+        scrollbar-width: thin;
+        scrollbar-color: #667eea #f0f0f0;
+      }
+
+      .forecast-scroll::-webkit-scrollbar {
+        height: 6px;
+      }
+
+      .forecast-scroll::-webkit-scrollbar-track {
+        background: #f0f0f0;
+        border-radius: 10px;
+      }
+
+      .forecast-scroll::-webkit-scrollbar-thumb {
+        background: #667eea;
+        border-radius: 10px;
+      }
+
+      .forecast-item {
+        min-width: 90px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 12px 8px;
+        border-radius: 12px;
+        text-align: center;
+        color: white;
+        flex-shrink: 0;
+        transition: transform 0.3s ease;
+      }
+
+      .forecast-item:hover {
+        transform: translateY(-3px);
+      }
+
+      .forecast-time {
+        font-size: 0.75em;
+        margin-bottom: 6px;
+        opacity: 0.9;
+      }
+
+      .forecast-icon {
+        font-size: 2em;
+        margin: 6px 0;
+      }
+
+      .forecast-temp {
+        font-size: 1.1em;
+        font-weight: bold;
+      }
+
+      .controls {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        justify-content: center;
+      }
+
+      button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 20px;
+        font-size: 0.9em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        box-shadow: 0 3px 12px rgba(102, 126, 234, 0.4);
+        width: 100%;
+      }
+
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      button:not(:disabled):hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 18px rgba(102, 126, 234, 0.6);
+      }
+
+      button:not(:disabled):active {
+        transform: translateY(0);
+      }
+
+      .input-group {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      input {
+        padding: 10px 15px;
+        border: 2px solid #667eea;
+        border-radius: 20px;
+        font-size: 0.85em;
+        width: 120px;
+        text-align: center;
+      }
+
+      input[type="text"] {
+        flex: 1;
+        min-width: 150px;
+      }
+
+      input:focus {
+        outline: none;
+        border-color: #764ba2;
+        box-shadow: 0 0 8px rgba(102, 126, 234, 0.3);
+      }
+
+      .loading {
+        text-align: center;
+        padding: 30px;
+        color: #667eea;
+        font-size: 1em;
+      }
+
+      .loading::after {
+        content: '...';
+        animation: dots 1.5s steps(4, end) infinite;
+      }
+
+      @keyframes dots {
+        0%, 20% { content: '.'; }
+        40% { content: '..'; }
+        60%, 100% { content: '...'; }
+      }
+
+      .error {
+        background: #ff6b6b;
+        color: white;
+        padding: 12px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        text-align: center;
+        font-size: 0.85em;
+      }
+
+      .footer {
+        text-align: center;
+        color: white;
+        margin-top: 15px;
+        font-size: 0.8em;
+        opacity: 0.8;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="weather-card">
+        <div class="header">
+          <h1>
+            <span>🌤️</span>
+            Weather Forecast
+            <span>🌤️</span>
+          </h1>
+          <div class="location-info">
+            <span>📍 Lat: <strong id="latitude">Loading...</strong></span>
+            <span>📍 Lon: <strong id="longitude">Loading...</strong></span>
+            <span>⚡ <span id="generation-time">Loading...</span> ms</span>
+          </div>
+        </div>
+
+        <div class="map-container" id="map-container" style="display: none;">
+          <iframe id="map-iframe"
+                  loading="lazy"
+                  allowfullscreen
+                  referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
+        </div>
+
+        <div id="error-message" class="error" style="display: none;"></div>
+
+        <div id="loading" class="loading" style="display: none;">
+          Loading weather data
+        </div>
+
+        <div id="weather-content">
+          <div class="current-weather">
+            <div class="weather-main">
+              <div class="weather-icon" id="main-weather-icon">☁️</div>
+              <div class="temperature" id="current-temp">--°</div>
+              <div class="weather-description" id="weather-description">Checking conditions...</div>
+            </div>
+          </div>
+
+          <div class="weather-details" id="weather-details">
+            <!-- Will be populated dynamically -->
+          </div>
+
+          <div class="hourly-forecast">
+            <h2>📅 Hourly Forecast</h2>
+            <div class="forecast-scroll" id="hourly-forecast">
+              <!-- Will be populated dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="input-group">
+            <input type="text" id="city-input" placeholder="Enter city name..." />
+            <button id="search-city-btn">🔍 Search</button>
+          </div>
+          <div class="input-group">
+            <input type="number" id="lat-input" placeholder="Latitude" step="0.1" />
+            <input type="number" id="lon-input" placeholder="Longitude" step="0.1" />
+          </div>
+          <button id="fetch-location-btn">🌍 Update Location</button>
+          <button id="refresh-btn">🔄 Refresh</button>
+        </div>
+      </div>
+
+      <div class="footer">
+        Powered by Open-Meteo API 🌐
+      </div>
+    </div>
+
+    <script type="module" src="/src/mcp-app.ts"></script>
+  </body>
+</html>

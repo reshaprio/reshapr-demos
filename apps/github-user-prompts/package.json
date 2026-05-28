@@ -1,0 +1,12 @@
+{
+  "name": "@reshapr-demos/github-user-prompts",
+  "version": "0.0.1",
+  "type": "module",
+  "private": true,
+  "description": "MCP app for the GitHub user prompts demo.",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc --noEmit && cross-env INPUT=mcp-app.html vite build --config ../../config/vite.mcp-app.ts",
+    "start": "concurrently 'cross-env NODE_ENV=development INPUT=mcp-app.html vite build --config ../../config/vite.mcp-app.ts --watch' 'tsx watch ../../scripts/serve-mcp-app.ts'"
+  }
+}
