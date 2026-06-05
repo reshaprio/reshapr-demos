@@ -21,7 +21,8 @@
     "demo:04": "bash demos/04-github-graphql-prompts/demo.sh",
     "demo:05": "bash demos/05-github-mcp-app/demo.sh",
     "demo:06": "bash demos/06-github-mcp-app-prompts/demo.sh",
-    "demo:07": "bash demos/07-open-meteo-mcpapp/demo.sh"
+    "demo:07": "bash demos/07-open-meteo-mcpapp/demo.sh",
+    "demo:08": "bash demos/08-github-graphql-elicitation-secret/demo.sh"
   },
   "dependencies": {
     "@modelcontextprotocol/ext-apps": "^1.0.0",
