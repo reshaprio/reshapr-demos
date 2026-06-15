@@ -13,7 +13,7 @@ p "ℹ️ default reShapr admin password is 'password' - you can change it by ed
 echo
 pei "reshapr service list"
 echo
-pei "reshapr import -u https://raw.githubusercontent.com/open-meteo/open-meteo/refs/heads/main/openapi.yml --backendEndpoint https://api.open-meteo.com"
+pei "reshapr import -u https://raw.githubusercontent.com/open-meteo/open-meteo/refs/heads/main/openapi/forecast.yml --backendEndpoint https://api.open-meteo.com"
 echo
 p "👍 Now you have the OpenAPI spec imported into reShapr and can use the Endpoints above (prefix it using 'http://' here) with your favorite MCP client app, just create a remote MCP server (HTTP Streamable)"
 p "ℹ️ You can also import local files into reShapr using the -f option."
