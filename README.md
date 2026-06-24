@@ -65,6 +65,7 @@ Use direct `demo.sh` execution when presenting or editing a demo. Use npm aliase
 | 06 GitHub MCP app prompts | `./demos/06-github-mcp-app-prompts/demo.sh` | `npm run demo:06` |
 | 07 Open-Meteo MCP app resource after Demo 02 | `./demos/07-open-meteo-mcpapp/demo.sh` | `npm run demo:07` |
 | 08 GitHub GraphQL elicitation secret | `./demos/08-github-graphql-elicitation-secret/demo.sh` | `npm run demo:08` |
+| 09 Open-Meteo OpenAPI Keycloak elicitation | `./demos/09-open-meteo-openapi-keycloak-elicitation/demo.sh` | `npm run demo:09` |
 
 ## MCP Apps
 
