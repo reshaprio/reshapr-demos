@@ -1,0 +1,159 @@
+apiVersion: reshapr.io/v1alpha1
+kind: CustomTools
+service:
+  name: GitHub v3 REST API
+  version: "1.1.4"
+customTools:
+  get_repo_velocity_metrics:
+    description: Fetch recent pull requests, review touchpoints, and changed file paths as one compact repository velocity action.
+    input:
+      type: object
+      properties:
+        owner:
+          type: string
+          description: GitHub organization or repository owner.
+        name:
+          type: string
+          description: GitHub repository name.
+        prCount:
+          type: number
+          description: Number of recent pull requests to inspect.
+          default: 10
+        reviewCount:
+          type: number
+          description: Maximum reviews to inspect per pull request.
+          default: 5
+        fileCount:
+          type: number
+          description: Maximum changed files to inspect per pull request.
+          default: 10
+      required:
+        - owner
+        - name
+    tools:
+      - tool: get_repos_owner_repo_pulls
+      - tool: get_repos_owner_repo_pulls_pull_number
+      - tool: get_repos_owner_repo_pulls_pull_number_reviews
+      - tool: get_repos_owner_repo_pulls_pull_number_files
+    script: |
+      function asInt(value, fallback, min, max) {
+        const parsed = Number(value);
+        if (!Number.isFinite(parsed)) { return fallback; }
+        return Math.max(min, Math.min(max, Math.floor(parsed)));
+      }
+
+      function requireOk(result, label) {
+        if (!result || !result.ok) {
+          rs.fail(label + ' failed', result ? result.error || result.content : null);
+        }
+        return result.content;
+      }
+
+      function loginOf(user) {
+        return user && user.login ? user.login : null;
+      }
+
+      function compactReview(review) {
+        return {
+          reviewer: loginOf(review.user),
+          state: review.state || null,
+          submitted_at: review.submitted_at || null
+        };
+      }
+
+      function compactPath(file) {
+        return file.filename || file.path || null;
+      }
+
+      const owner = input.owner;
+      const repo = input.name;
+      const prCount = asInt(input.prCount, 10, 1, 25);
+      const reviewCount = asInt(input.reviewCount, 5, 1, 25);
+      const fileCount = asInt(input.fileCount, 10, 1, 50);
+
+      const list = requireOk(rs.callTool('get_repos_owner_repo_pulls', {
+        owner: owner,
+        repo: repo,
+        state: 'all',
+        sort: 'updated',
+        direction: 'desc',
+        per_page: prCount
+      }), 'list pull requests');
+
+      const selected = Array.isArray(list) ? list.slice(0, prCount) : [];
+      const jobs = [];
+
+      for (let i = 0; i < selected.length; i++) {
+        const number = selected[i].number;
+        jobs.push({
+          index: i,
+          type: 'detail',
+          promise: rs.callToolAsync('get_repos_owner_repo_pulls_pull_number', {
+            owner: owner,
+            repo: repo,
+            pull_number: number
+          })
+        });
+        jobs.push({
+          index: i,
+          type: 'reviews',
+          promise: rs.callToolAsync('get_repos_owner_repo_pulls_pull_number_reviews', {
+            owner: owner,
+            repo: repo,
+            pull_number: number,
+            per_page: reviewCount
+          })
+        });
+        jobs.push({
+          index: i,
+          type: 'files',
+          promise: rs.callToolAsync('get_repos_owner_repo_pulls_pull_number_files', {
+            owner: owner,
+            repo: repo,
+            pull_number: number,
+            per_page: fileCount
+          })
+        });
+      }
+
+      const jobResults = rs.awaitPromises(jobs.map(function (job) { return job.promise; }));
+      const expanded = selected.map(function (pull) {
+        return { list: pull, detail: null, reviews: [], files: [] };
+      });
+
+      for (let i = 0; i < jobs.length; i++) {
+        const job = jobs[i];
+        const number = selected[job.index].number;
+        const content = requireOk(jobResults[i], job.type + ' for #' + number);
+        expanded[job.index][job.type] = content;
+      }
+
+      const metrics = [];
+
+      for (let i = 0; i < expanded.length; i++) {
+        const item = expanded[i];
+        const detail = item.detail || item.list;
+        const reviews = item.reviews;
+        const files = item.files;
+        const number = item.list.number;
+
+        metrics.push({
+          pr_id: detail.number || number,
+          title: detail.title || item.list.title || null,
+          creator: loginOf(detail.user || item.list.user),
+          state: detail.state || item.list.state || null,
+          created_at: detail.created_at || item.list.created_at || null,
+          merged_at: detail.merged_at || item.list.merged_at || null,
+          review_touchpoints: Array.isArray(reviews) ? reviews.slice(0, reviewCount).map(compactReview) : [],
+          changed_paths: Array.isArray(files) ? files.slice(0, fileCount).map(compactPath).filter(Boolean) : []
+        });
+      }
+
+      return {
+        owner: owner,
+        repo: repo,
+        requested_prs: prCount,
+        inspected_prs: metrics.length,
+        source_backend_calls: 1 + (3 * metrics.length),
+        metrics: metrics
+      };

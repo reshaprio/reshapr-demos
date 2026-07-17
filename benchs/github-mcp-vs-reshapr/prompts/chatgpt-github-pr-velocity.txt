@@ -1,0 +1,5 @@
+Using the available GitHub MCP tools, analyze recent pull request velocity for the public repository microsoft/vscode.
+
+Use the 10 most recently updated pull requests. For each pull request, collect the pull request details, up to 5 review touchpoints, and up to 10 changed file paths.
+
+Return a compact summary with pull request id, title, creator, state, creation and merge timestamps, review touchpoints, and changed paths.

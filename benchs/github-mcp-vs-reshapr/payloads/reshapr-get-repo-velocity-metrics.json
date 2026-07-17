@@ -1,0 +1,10 @@
+{
+  "name": "get_repo_velocity_metrics",
+  "arguments": {
+    "owner": "microsoft",
+    "name": "vscode",
+    "prCount": 10,
+    "reviewCount": 5,
+    "fileCount": 10
+  }
+}
