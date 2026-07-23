@@ -1,7 +1,18 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -n "${BASH_VERSION:-}" ]; then
+  SCRIPT_PATH="${BASH_SOURCE[0]}"
+elif [ -n "${ZSH_VERSION:-}" ]; then
+  SCRIPT_PATH="${(%):-%x}"
+else
+  printf 'Unsupported shell: source this file from Bash or zsh.\n' >&2
+  return 1 2>/dev/null || exit 1
+fi
+
+SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)" || {
+  printf 'Unable to resolve the benchmark directory.\n' >&2
+  return 1 2>/dev/null || exit 1
+}
 export BENCH_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 if [ -n "${TOKEN:-}" ] && [ -z "${GITHUB_TOKEN:-}" ]; then
