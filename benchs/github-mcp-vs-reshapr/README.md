@@ -227,6 +227,8 @@ export GITHUB_SERVICE_NAME="GitHub v3 REST API"
 export GITHUB_SERVICE_FILTER_JSON_NAME="GitHub v3 REST API Filter JSON"
 export GITHUB_SERVICE_FILTER_TOON_NAME="GitHub v3 REST API Filter TOON"
 export GITHUB_SERVICE_VERSION="1.1.4"
+export GITHUB_INCLUDED_OPERATIONS_JSON='["get_repo_velocity_metrics","GET /repos/{owner}/{repo}/pulls","GET /repos/{owner}/{repo}/pulls/{pull_number}","GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews","GET /repos/{owner}/{repo}/pulls/{pull_number}/files"]'
+export GITHUB_EXPECTED_MCP_TOOLS_JSON='["get_repo_velocity_metrics","get_repos_owner_repo_pulls","get_repos_owner_repo_pulls_pull_number","get_repos_owner_repo_pulls_pull_number_reviews","get_repos_owner_repo_pulls_pull_number_files"]'
 
 printf 'GitHub OpenAPI service: %s %s\n' "$GITHUB_SERVICE_NAME" "$GITHUB_SERVICE_VERSION"
 printf 'GitHub OpenAPI URL: %s\n' "$GITHUB_OPENAPI_URL"
@@ -480,7 +482,7 @@ reshapr attach \
   --output json
 ```
 
-Expose the base service after the custom action is attached:
+Expose the base service after the custom action is attached. The configuration allowlists the four GitHub operations used by the custom action, reducing the MCP surface from the full GitHub REST API to the custom action and its required dependencies:
 
 Script version: [scripts/07-expose-base-service.sh](scripts/07-expose-base-service.sh).
 
@@ -492,6 +494,7 @@ CONFIG_ID="$(
     --serviceId "$SERVICE_ID" \
     --backendEndpoint "https://api.github.com" \
     --backendSecret "$SECRET_ID" \
+    --includedOperations "$GITHUB_INCLUDED_OPERATIONS_JSON" \
     --output json \
   | tee "$WORKDIR/config-base.json" \
   | jq -r '.id // .configurationPlan.id'
@@ -569,7 +572,7 @@ filters:
 YAML
 ```
 
-Create the filtered services. Each service imports the same full official GitHub OpenAPI YAML, attaches the same custom action under that service name, then attaches the corresponding **output filter before exposure**:
+Create the filtered services. Each service imports the same full official GitHub OpenAPI YAML, attaches the same custom action under that service name, then attaches the corresponding **output filter before exposure**. The same operation allowlist is applied to each configuration:
 
 Script version: [scripts/08-create-filtered-services.sh](scripts/08-create-filtered-services.sh).
 
@@ -605,6 +608,7 @@ FILTER_JSON_CONFIG_ID="$(
     --serviceId "$FILTER_JSON_SERVICE_ID" \
     --backendEndpoint "https://api.github.com" \
     --backendSecret "$SECRET_ID" \
+    --includedOperations "$GITHUB_INCLUDED_OPERATIONS_JSON" \
     --output json \
   | tee "$WORKDIR/config-filter-json.json" \
   | jq -r '.id // .configurationPlan.id'
@@ -620,6 +624,7 @@ FILTER_TOON_CONFIG_ID="$(
     --serviceId "$FILTER_TOON_SERVICE_ID" \
     --backendEndpoint "https://api.github.com" \
     --backendSecret "$SECRET_ID" \
+    --includedOperations "$GITHUB_INCLUDED_OPERATIONS_JSON" \
     --output json \
   | tee "$WORKDIR/config-filter-toon.json" \
   | jq -r '.id // .configurationPlan.id'
@@ -630,66 +635,30 @@ export RESHAPR_MCP_URL_FILTER_JSON="http://localhost:7777/mcp/reshapr/GitHub+v3+
 export RESHAPR_MCP_URL_FILTER_TOON="http://localhost:7777/mcp/reshapr/GitHub+v3+REST+API+Filter+TOON/1.1.4"
 ```
 
-Confirm the reShapr MCP endpoint exposes the custom action:
+Confirm all three reShapr MCP endpoints expose exactly the custom action and its four required GitHub operations:
 
 Script version: [scripts/09-confirm-tools-list.sh](scripts/09-confirm-tools-list.sh).
 
 ```bash
-curl -sS \
-  -X POST "$RESHAPR_MCP_URL" \
-  -H "Accept: application/json, text/event-stream" \
-  -H "Content-Type: application/json" \
-  --data '{
-    "jsonrpc": "2.0",
-    "id": 1,
-    "method": "initialize",
-    "params": {
-      "protocolVersion": "2025-06-18",
-      "capabilities": {},
-      "clientInfo": {
-        "name": "curl-check",
-        "version": "1.0.0"
-      }
-    }
-  }' \
-  -D "$WORKDIR/reshapr-init.headers" \
-  -o "$WORKDIR/reshapr-init.body"
-
-RESHAPR_SESSION_ID="$(
-  awk 'tolower($0) ~ /^mcp-session-id:/ { sub(/^[^:]+:[[:space:]]*/, ""); sub(/\r$/, ""); print; exit }' \
-    "$WORKDIR/reshapr-init.headers"
-)"
-
-curl -sS \
-  -X POST "$RESHAPR_MCP_URL" \
-  -H "Accept: application/json, text/event-stream" \
-  -H "Content-Type: application/json" \
-  -H "MCP-Protocol-Version: 2025-06-18" \
-  -H "Mcp-Session-Id: $RESHAPR_SESSION_ID" \
-  --data '{"jsonrpc":"2.0","method":"notifications/initialized","params":{}}' \
-  -o /dev/null
-
-curl -sS \
-  -X POST "$RESHAPR_MCP_URL" \
-  -H "Accept: application/json, text/event-stream" \
-  -H "Content-Type: application/json" \
-  -H "MCP-Protocol-Version: 2025-06-18" \
-  -H "Mcp-Session-Id: $RESHAPR_SESSION_ID" \
-  --data '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}' \
-  -o "$WORKDIR/reshapr-tools.body"
-
-if grep -q '^data:' "$WORKDIR/reshapr-tools.body"; then
-  sed -n 's/^data:[[:space:]]*//p' "$WORKDIR/reshapr-tools.body" \
-  | jq -r '.result.tools[].name'
-else
-  jq -r '.result.tools[].name' "$WORKDIR/reshapr-tools.body"
-fi
+scripts/09-confirm-tools-list.sh
 ```
 
-Expected output includes:
+Expected output:
+
+```text
+base: verified 5 required MCP tools
+filter-json: verified 5 required MCP tools
+filter-toon: verified 5 required MCP tools
+```
+
+The exact tool set validated on each endpoint is:
 
 ```text
 get_repo_velocity_metrics
+get_repos_owner_repo_pulls
+get_repos_owner_repo_pulls_pull_number
+get_repos_owner_repo_pulls_pull_number_files
+get_repos_owner_repo_pulls_pull_number_reviews
 ```
 
 ## Curl-Only Benchmark Script

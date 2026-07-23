@@ -16,7 +16,14 @@ reshapr attach --file "$BENCH_DIR/artifacts/filter-json.yaml" --output json
 
 FILTER_JSON_SERVICE_ID="$(jq -r '.service.id // .id' "$WORKDIR/import-filter-json.json")"
 FILTER_JSON_CONFIG_ID="$(
-  reshapr config create "github velocity benchmark filter json"     --serviceId "$FILTER_JSON_SERVICE_ID"     --backendEndpoint "https://api.github.com"     --backendSecret "$SECRET_ID"     --output json   | tee "$WORKDIR/config-filter-json.json"   | jq -r '.id // .configurationPlan.id'
+  reshapr config create "github velocity benchmark filter json" \
+    --serviceId "$FILTER_JSON_SERVICE_ID" \
+    --backendEndpoint "https://api.github.com" \
+    --backendSecret "$SECRET_ID" \
+    --includedOperations "$GITHUB_INCLUDED_OPERATIONS_JSON" \
+    --output json \
+  | tee "$WORKDIR/config-filter-json.json" \
+  | jq -r '.id // .configurationPlan.id'
 )"
 reshapr expo create --configuration "$FILTER_JSON_CONFIG_ID" --gateway-group "1" --output json
 
@@ -25,7 +32,14 @@ reshapr attach --file "$BENCH_DIR/artifacts/filter-toon.yaml" --output json
 
 FILTER_TOON_SERVICE_ID="$(jq -r '.service.id // .id' "$WORKDIR/import-filter-toon.json")"
 FILTER_TOON_CONFIG_ID="$(
-  reshapr config create "github velocity benchmark filter toon"     --serviceId "$FILTER_TOON_SERVICE_ID"     --backendEndpoint "https://api.github.com"     --backendSecret "$SECRET_ID"     --output json   | tee "$WORKDIR/config-filter-toon.json"   | jq -r '.id // .configurationPlan.id'
+  reshapr config create "github velocity benchmark filter toon" \
+    --serviceId "$FILTER_TOON_SERVICE_ID" \
+    --backendEndpoint "https://api.github.com" \
+    --backendSecret "$SECRET_ID" \
+    --includedOperations "$GITHUB_INCLUDED_OPERATIONS_JSON" \
+    --output json \
+  | tee "$WORKDIR/config-filter-toon.json" \
+  | jq -r '.id // .configurationPlan.id'
 )"
 reshapr expo create --configuration "$FILTER_TOON_CONFIG_ID" --gateway-group "1" --output json
 

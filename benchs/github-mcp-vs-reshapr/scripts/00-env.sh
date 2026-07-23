@@ -33,6 +33,12 @@ export GITHUB_SERVICE_NAME="${GITHUB_SERVICE_NAME:-GitHub v3 REST API}"
 export GITHUB_SERVICE_FILTER_JSON_NAME="${GITHUB_SERVICE_FILTER_JSON_NAME:-GitHub v3 REST API Filter JSON}"
 export GITHUB_SERVICE_FILTER_TOON_NAME="${GITHUB_SERVICE_FILTER_TOON_NAME:-GitHub v3 REST API Filter TOON}"
 export GITHUB_SERVICE_VERSION="${GITHUB_SERVICE_VERSION:-1.1.4}"
+if [ -z "${GITHUB_INCLUDED_OPERATIONS_JSON:-}" ]; then
+  export GITHUB_INCLUDED_OPERATIONS_JSON='["get_repo_velocity_metrics","GET /repos/{owner}/{repo}/pulls","GET /repos/{owner}/{repo}/pulls/{pull_number}","GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews","GET /repos/{owner}/{repo}/pulls/{pull_number}/files"]'
+fi
+if [ -z "${GITHUB_EXPECTED_MCP_TOOLS_JSON:-}" ]; then
+  export GITHUB_EXPECTED_MCP_TOOLS_JSON='["get_repo_velocity_metrics","get_repos_owner_repo_pulls","get_repos_owner_repo_pulls_pull_number","get_repos_owner_repo_pulls_pull_number_reviews","get_repos_owner_repo_pulls_pull_number_files"]'
+fi
 
 export RESHAPR_MCP_URL="${RESHAPR_MCP_URL:-http://localhost:7777/mcp/reshapr/GitHub+v3+REST+API/1.1.4}"
 export RESHAPR_MCP_URL_FILTER_JSON="${RESHAPR_MCP_URL_FILTER_JSON:-http://localhost:7777/mcp/reshapr/GitHub+v3+REST+API+Filter+JSON/1.1.4}"
