@@ -3,8 +3,6 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "${SCRIPT_DIR}/../../scripts/lib/demo-env.sh"
 
-GITHUB_GRAPHQL_MCP_ENDPOINT="${RESHAPR_MCP_URL}/mcp/reshapr/github-graphql-${GITHUB_GRAPHQL_SERVICE_VERSION}-default"
-
 clear
 
 pei "echo \"Demo #3 - GitHub GraphQL API and Context Control\""
@@ -24,7 +22,7 @@ echo
 wait
 p "But let's check the number of characters in the tools list response for the GitHub GraphQL service!"
 echo
-pei "curl ${GITHUB_GRAPHQL_MCP_ENDPOINT} -X POST -H 'Accept: application/json, text/event-stream' -H 'Content-Type: application/json' -H 'Mcp-Method: tools/list' -H 'MCP-Protocol-Version: 2026-07-28' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/list\",\"params\":{\"_meta\":{\"protocolVersion\":\"2026-07-28\",\"client\":{\"name\":\"curl\",\"version\":\"1.0.0\"}}}}' -sS | wc -c"
+pei "curl ${RESHAPR_MCP_URL}/mcp/reshapr/GitHub+GraphQL/${GITHUB_GRAPHQL_SERVICE_VERSION} -H 'Content-type: application/json' -X POST -d '{\"jsonrpc\": \"2.0\", \"method\": \"tools/list\", \"params\": {}}' -s | wc -c"
 p "That's a lot of tools! Because the GitHub GraphQL schema is huge and reShapr generates a tool for"
 p "each query, mutation, and subscription in the schema. But we don't need all of those tools for our"
 p "MCP client app, we just need the 'user' query to get information about GitHub users."
@@ -40,7 +38,7 @@ echo
 wait
 p "And check the number of characters in the tools list response for the GitHub GraphQL service again!"
 echo
-pe "curl ${GITHUB_GRAPHQL_MCP_ENDPOINT} -X POST -H 'Accept: application/json, text/event-stream' -H 'Content-Type: application/json' -H 'Mcp-Method: tools/list' -H 'MCP-Protocol-Version: 2026-07-28' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/list\",\"params\":{\"_meta\":{\"protocolVersion\":\"2026-07-28\",\"client\":{\"name\":\"curl\",\"version\":\"1.0.0\"}}}}' -sS | wc -c"
+pe "curl ${RESHAPR_MCP_URL}/mcp/reshapr/GitHub+GraphQL/${GITHUB_GRAPHQL_SERVICE_VERSION} -H 'Content-type: application/json' -X POST -d '{\"jsonrpc\": \"2.0\", \"method\": \"tools/list\", \"params\": {}}' -s | wc -c"
 p "That's much better! Now we have a much smaller set of tools that are relevant to our MCP client app,"
 p "but still many related types we don't need."
 echo
@@ -57,7 +55,7 @@ echo
 wait
 p "And check the number of characters in the tools list response for the GitHub GraphQL service again!"
 echo
-pe "curl ${GITHUB_GRAPHQL_MCP_ENDPOINT} -X POST -H 'Accept: application/json, text/event-stream' -H 'Content-Type: application/json' -H 'Mcp-Method: tools/list' -H 'MCP-Protocol-Version: 2026-07-28' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/list\",\"params\":{\"_meta\":{\"protocolVersion\":\"2026-07-28\",\"client\":{\"name\":\"curl\",\"version\":\"1.0.0\"}}}}' -sS | wc -c"
+pe "curl ${RESHAPR_MCP_URL}/mcp/reshapr/GitHub+GraphQL/${GITHUB_GRAPHQL_SERVICE_VERSION} -H 'Content-type: application/json' -X POST -d '{\"jsonrpc\": \"2.0\", \"method\": \"tools/list\", \"params\": {}}' -s | wc -c"
 echo
 p "🎉 Now we have a very small set of tools that are relevant to our MCP client app and the context-"
 p "windows are much more manageable for the LLM to work with! We can always adjust the 'CustomTools'"
