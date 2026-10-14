@@ -7,7 +7,7 @@ clear
 
 p "Demo #0 Setup - install reshapr-cli"
 echo
-pei "npm install -g @reshapr/reshapr-cli"
+pei "npm install -g @reshapr/reshapr-cli --allow-scripts=@scarf/scarf"
 echo
 pei "reshapr --version"
 echo
