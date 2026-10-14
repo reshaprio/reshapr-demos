@@ -1,5 +1,9 @@
 # Demo 05: GitHub MCP App
 
+Run this after Demo 03, which imports the GitHub GraphQL service and attaches the `get_user_with_latest_followers` custom tool.
+
+All MCP app servers use port 3030, so stop any other app server before starting this one.
+
 Start the app server in another terminal first:
 
 ```sh

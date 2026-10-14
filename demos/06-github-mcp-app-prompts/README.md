@@ -1,5 +1,9 @@
 # Demo 06: GitHub MCP App Prompts
 
+Run this after Demos 03 and 04, which create the GitHub GraphQL service, custom tool and prompts. Demo 05 is optional; its app resource is replaced by this demo's.
+
+Requires `jq`. All MCP app servers use port 3030, so stop any other app server before starting this one.
+
 Start the app server in another terminal first:
 
 ```sh

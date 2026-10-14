@@ -1,5 +1,9 @@
 # Demo 08: GitHub GraphQL Elicitation Secret
 
+This demo is self-contained and imports `./schema.docs.graphql` from the repository root, not `resources/github/`. It is meant to start from a clean reShapr instance; if Demo 03 already created the GitHub GraphQL service, the import updates that service instead of creating a new one.
+
+Each run creates a new secret named `github`, so you may want to delete the previous one (`reshapr secret list`) before running it again.
+
 Run from this directory:
 
 ```sh

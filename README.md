@@ -23,6 +23,8 @@ https://www.youtube.com/@reShaprio
 - npm
 - Docker, for running reShapr locally
 - reShapr CLI, installed by demo 00
+- [`pv`](https://www.ivarch.com/programs/pv.shtml) (`brew install pv`), used by `demo-magic` to simulate typing. Without it the demos exit immediately; run them with `DEMO_MAGIC_OPTS="-n -d"` to disable simulated typing instead.
+- `jq`, used by demo 06
 
 Optional:
 
@@ -69,7 +71,7 @@ Use direct `demo.sh` execution when presenting or editing a demo. Use npm aliase
 
 ## MCP Apps
 
-Start one MCP app server at a time:
+Start one MCP app server at a time, because all of them serve on the same port (3030):
 
 ```sh
 npm run start:open-meteo
@@ -87,7 +89,7 @@ npm run build
 
 ## Shared Resources
 
-- `resources/open-meteo/openapi.yml`
+- `resources/open-meteo/forecast.yml`
 - `resources/github/schema.docs.graphql`
 - `resources/github/custom-tools.yaml`
 - `resources/github/prompts.yaml`
@@ -97,3 +99,9 @@ Refresh the GitHub GraphQL schema with:
 ```sh
 ./scripts/download-github-schema.sh
 ```
+
+The script downloads a schema pinned to a specific github/docs commit, because newer schemas currently fail to import with reShapr 1.0.0 (see [reshaprio/reshapr#559](https://github.com/reshaprio/reshapr/issues/559)). Switch back to the latest schema once that issue is fixed.
+
+Demo 08 imports its own older copy, `./schema.docs.graphql` at the repository root.
+
+Some demos build on earlier ones (for example 04, 05 and 06 need the GitHub GraphQL service from demo 03, and 07 needs demo 02), so run them in order against the same local reShapr instance.

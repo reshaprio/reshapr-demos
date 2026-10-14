@@ -2,7 +2,7 @@
 
 Run this after Demo 02 has imported the Open-Meteo OpenAPI service.
 
-Start the app server in another terminal first:
+All MCP app servers use port 3030, so stop any other app server before starting this one. Start the app server in another terminal first:
 
 ```sh
 npm run start:open-meteo
