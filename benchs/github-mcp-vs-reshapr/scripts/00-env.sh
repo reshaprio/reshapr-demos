@@ -46,12 +46,22 @@ export RESHAPR_MCP_URL_FILTER_TOON="${RESHAPR_MCP_URL_FILTER_TOON:-http://localh
 
 mkdir -p "$WORKDIR"
 
+# The saved env files hold IDs; they must not override MCP URLs exported by the user.
+_keep_mcp_url="$RESHAPR_MCP_URL"
+_keep_mcp_url_json="$RESHAPR_MCP_URL_FILTER_JSON"
+_keep_mcp_url_toon="$RESHAPR_MCP_URL_FILTER_TOON"
+
 for env_file in "$WORKDIR/secret.env" "$WORKDIR/base-service.env" "$WORKDIR/filtered-services.env"; do
   if [ -f "$env_file" ]; then
     # shellcheck source=/dev/null
     source "$env_file"
   fi
 done
+
+export RESHAPR_MCP_URL="$_keep_mcp_url"
+export RESHAPR_MCP_URL_FILTER_JSON="$_keep_mcp_url_json"
+export RESHAPR_MCP_URL_FILTER_TOON="$_keep_mcp_url_toon"
+unset _keep_mcp_url _keep_mcp_url_json _keep_mcp_url_toon
 
 printf 'GitHub OpenAPI service: %s %s
 ' "$GITHUB_SERVICE_NAME" "$GITHUB_SERVICE_VERSION"

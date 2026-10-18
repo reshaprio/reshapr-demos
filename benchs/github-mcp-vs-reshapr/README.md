@@ -70,15 +70,15 @@ That matters beyond speed. reShapr makes repeated agent workflows **predictable,
 
 ## The Result
 
-Latest measured live run against `microsoft/vscode`, using the same 10 pull requests for the official MCP and reShapr custom-action comparison:
+Latest measured live run against `microsoft/vscode`, using the same 10 pull requests for the official MCP and reShapr custom-action comparison. Re-validated on 2026-10-18 with reShapr 1.1.0 (median of 5 runs). The [blog post](https://reshapr.io/blog/reshapr-vs-official-github-mcp) still shows the original figures:
 
 | Metric | Official GitHub MCP | reShapr MCP | Reduction |
 | --- | ---: | ---: | ---: |
 | Agent tool calls | 31 | **1** | **96.8% fewer** |
 | MCP HTTP roundtrips | 34 | **4** | **88.2% fewer** |
-| Tool-call latency | 28,081 ms | **2,082 ms** | **92.6% lower** |
-| Response bytes read by the agent | 267,824 | **7,401** | **97.2% smaller** |
-| Estimated token load (*) | 66,956 | **1,851** | **97.2% fewer** |
+| Tool-call latency | 29,664 ms | **2,729 ms** | **90.8% lower** |
+| Response bytes read by the agent | 247,005 | **6,065** | **97.5% smaller** |
+| Estimated token load (*) | 61,752 | **1,517** | **97.5% fewer** |
 
 
 Then reShapr applies a **second, independent optimization** at the **output boundary**. The same custom action was called through two `ToolsOutputFilters` artifacts on a matched reShapr run: first with JSON retain/patch rules, then with the same filter plus `convertToToon: true`.
@@ -87,12 +87,12 @@ The official GitHub MCP baseline does not expose an equivalent output-filter art
 
 | reShapr variant | Agent tool calls | MCP HTTP roundtrips | Tool-call latency ms | Tool-call response bytes | Estimated tokens (*) |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Custom action | 1 | 4 | 2,082 | 7,401 | 1,851 |
-| Custom action + output filter | 1 | 4 | 1,755 | 7,090 | 1,773 |
-| **Custom action + output filter + TOON** | **1** | **4** | **1,475** | **6,482** | **1,621** |
+| Custom action | 1 | 4 | 2,729 | 6,065 | 1,517 |
+| Custom action + output filter | 1 | 4 | 1,887 | 5,774 | 1,444 |
+| **Custom action + output filter + TOON** | **1** | **4** | **1,724** | **5,596** | **1,399** |
 
 
-That is a smaller win than the **31-to-1 action design**, but it is still useful: another **12.4% response-byte reduction** from the custom action to filtered TOON output, on top of the main **97.2% reduction** versus the official GitHub MCP loop.
+That is a smaller win than the **31-to-1 action design**, but it is still useful: another **7.7% response-byte reduction** from the custom action to filtered TOON output, on top of the main **97.5% reduction** versus the official GitHub MCP loop.
 
 The key point is **fairness**: reShapr does not pretend GitHub has less data. The reShapr action still performs the source GitHub operations needed to produce the answer. The win is that the agent sees **one semantic tool call, one compact response, and one stable task-shaped contract**.
 
@@ -236,12 +236,12 @@ printf 'GitHub OpenAPI URL: %s\n' "$GITHUB_OPENAPI_URL"
 
 ## Start reShapr
 
-Start reShapr locally. The benchmark used the nightly local stack because it imports the **full GitHub OpenAPI YAML** and runs a custom action that performs **31 backend tool calls**.
+Start reShapr 1.1.0 locally. The benchmark imports the **full GitHub OpenAPI YAML** and runs a custom action that performs **31 backend tool calls**.
 
 Script version: [scripts/01-start-reshapr.sh](scripts/01-start-reshapr.sh).
 
 ```bash
-reshapr run --release nightly
+reshapr run --release 1.1.0
 ```
 
 For the full GitHub OpenAPI YAML, the gateway needs a **larger exposition-discovery gRPC message size**. For this 10-PR custom action, it also needs a **script tool-call budget above 31**. The benchmark used these gateway environment variables:
@@ -252,7 +252,10 @@ File version: [artifacts/gateway-env.example](artifacts/gateway-env.example).
 QUARKUS_GRPC_CLIENTS__EXPOSITION_DISCOVERY__MAX_INBOUND_MESSAGE_SIZE=33554432
 QUARKUS_GRPC_CLIENTS__EXPOSITION_DISCOVERY__FLOW_CONTROL_WINDOW=33554432
 RESHAPR_GATEWAY_SCRIPTING_MAX_TOOL_CALLS=50
+RESHAPR_GATEWAY_BACKEND_HTTP_DEFAULT_TIMEOUT=10000
 ```
+
+reShapr 1.1.0 limits custom-tool scripts to **10 backend tool calls by default**, so `RESHAPR_GATEWAY_SCRIPTING_MAX_TOOL_CALLS` is mandatory here: without it the action fails with `Maximum number of tool calls (10) exceeded for this script`. The backend HTTP timeout defaults to 3,000 ms, which can be too tight for a 31-call action against GitHub (a run failed with `Backend timed out after 3000ms`), so it is raised to 10,000 ms.
 
 You can verify them on the running gateway:
 
@@ -261,7 +264,7 @@ Script version: [scripts/02-check-gateway-env.sh](scripts/02-check-gateway-env.s
 ```bash
 docker inspect reshapr-gateway-01 \
   --format '{{range .Config.Env}}{{println .}}{{end}}' \
-| grep -E 'EXPOSITION_DISCOVERY|SCRIPTING_MAX_TOOL_CALLS'
+| grep -E 'EXPOSITION_DISCOVERY|SCRIPTING_MAX_TOOL_CALLS|BACKEND_HTTP_DEFAULT_TIMEOUT'
 ```
 
 In another terminal, authenticate the CLI if needed:
@@ -1109,7 +1112,7 @@ That action is better for agents because it has **one clear intent**, **one comp
 
 This is the real reShapr advantage: it turns **existing APIs into agent-native tools** without asking every agent to rediscover the same orchestration loop.
 
-For this use case, the difference is not subtle. **31 agent tool calls become 1**. **34 MCP HTTP roundtrips become 4**. **267.8 KB** of official MCP tool responses becomes **7.4 KB**, and roughly **67.0K estimated tokens** becomes **1.9K**. When the use case can safely drop fields, **output filters and TOON** can reduce the already compact custom output further.
+For this use case, the difference is not subtle. **31 agent tool calls become 1**. **34 MCP HTTP roundtrips become 4**. **247.0 KB** of official MCP tool responses becomes **6.1 KB**, and roughly **61.8K estimated tokens** becomes **1.5K**. When the use case can safely drop fields, **output filters and TOON** can reduce the already compact custom output further.
 
 That is the kind of improvement that changes **how reliable an agent workflow feels in practice**.
 
