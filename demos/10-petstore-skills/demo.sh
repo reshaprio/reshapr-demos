@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "${SCRIPT_DIR}/../../scripts/lib/demo-env.sh"
+
+PETSTORE_MCP_URL="${RESHAPR_MCP_URL}/mcp/reshapr/swagger-petstore-openapi-3-0-1-0-27-default"
+
+clear
+
+p "Demo #10 Petstore - serve a Skill over MCP with reShapr"
+echo
+pei "reshapr login -u admin -p ${RESHAPR_PASSWORD} -s ${RESHAPR_URL}"
+echo
+pei "reshapr import -u https://petstore3.swagger.io/api/v3/openapi.json --backendEndpoint https://petstore3.swagger.io/api/v3"
+echo
+p "The Petstore API is now an MCP server. Tools say what the API can do. A Skill says how your team wants it used."
+echo
+pei "show_file ./demos/10-petstore-skills/skills/petstore-adoption-desk/SKILL.md"
+wait
+echo
+pei "show_file ./demos/10-petstore-skills/resources/skills.local.yaml"
+p "Start the Skill file server in another terminal before attaching:"
+p "npm run start:petstore-skills"
+wait
+echo
+pei "reshapr attach -f ./demos/10-petstore-skills/resources/skills.local.yaml"
+echo
+p "Now check that the Skill is discoverable and conformant (SEP-2640) with the MCP Inspector."
+echo
+pei "npx -y @modelcontextprotocol/inspector@latest --cli ${PETSTORE_MCP_URL} --transport http --method skills/list --verify"
+echo
+p "🎉 The Skill is served next to the tools. Point Claude (or any MCP client that supports skills) at ${PETSTORE_MCP_URL}"
+p "ℹ️ In production, use skills.remote.yaml and pin a Git tag instead of running a local file server."

@@ -14,6 +14,7 @@
     "start:open-meteo": "npm --workspace @reshapr-demos/open-meteo run start",
     "start:github-user": "npm --workspace @reshapr-demos/github-user run start",
     "start:github-user-prompts": "npm --workspace @reshapr-demos/github-user-prompts run start",
+    "start:petstore-skills": "python3 -m http.server 3040 --directory demos/10-petstore-skills/skills",
     "demo:00": "bash demos/00-install-cli/demo.sh",
     "demo:01": "bash demos/01-run-local/demo.sh",
     "demo:02": "bash demos/02-open-meteo-openapi/demo.sh",
@@ -23,7 +24,8 @@
     "demo:06": "bash demos/06-github-mcp-app-prompts/demo.sh",
     "demo:07": "bash demos/07-open-meteo-mcpapp/demo.sh",
     "demo:08": "bash demos/08-github-graphql-elicitation-secret/demo.sh",
-    "demo:09": "bash demos/09-open-meteo-openapi-keycloak-elicitation/demo.sh"
+    "demo:09": "bash demos/09-open-meteo-openapi-keycloak-elicitation/demo.sh",
+    "demo:10": "bash demos/10-petstore-skills/demo.sh"
   },
   "dependencies": {
     "@modelcontextprotocol/ext-apps": "^1.0.0",

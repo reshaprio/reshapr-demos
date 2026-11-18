@@ -1,0 +1,12 @@
+apiVersion: reshapr.io/v1alpha1
+kind: Skills
+service:
+  name: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.27
+skills:
+  petstore-adoption-desk:
+    # Served by `npm run start:petstore-skills`; the gateway runs in Docker, so it reaches the host this way.
+    remoteContent: http://host.docker.internal:3040/petstore-adoption-desk
+    files:
+      - references/ADOPTION-RULES.md
+      - references/ORDER-TEMPLATE.md
