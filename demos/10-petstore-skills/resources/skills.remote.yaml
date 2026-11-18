@@ -5,8 +5,8 @@ service:
   version: 1.0.27
 skills:
   petstore-adoption-desk:
-    # Pin a Git tag so the skill content cannot change under the gateway.
-    remoteContent: https://raw.githubusercontent.com/reshaprio/reshapr-demos/TAG/demos/10-petstore-skills/skills/petstore-adoption-desk
+    # Pinned to a Git tag: the skill content cannot change under the gateway.
+    remoteContent: https://raw.githubusercontent.com/reshaprio/reshapr-demos/skills-demo-1.2.0/demos/10-petstore-skills/skills/petstore-adoption-desk
     files:
       - references/ADOPTION-RULES.md
       - references/ORDER-TEMPLATE.md
