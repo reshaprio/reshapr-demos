@@ -1,0 +1,12 @@
+apiVersion: reshapr.io/v1alpha1
+kind: Skills
+service:
+  name: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.27
+skills:
+  petstore-adoption-desk:
+    # Pin a Git tag so the skill content cannot change under the gateway.
+    remoteContent: https://raw.githubusercontent.com/reshaprio/reshapr-demos/TAG/demos/10-petstore-skills/skills/petstore-adoption-desk
+    files:
+      - references/ADOPTION-RULES.md
+      - references/ORDER-TEMPLATE.md
