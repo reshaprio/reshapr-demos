@@ -5,6 +5,13 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 require_reshapr
 
+# Without jq, pick the service ID from the table output with awk.
+if command -v jq >/dev/null 2>&1; then
+  ARTIFACT_LIST_CMD="reshapr service list -o json | jq -r '.[] | select(.name==\"GitHub GraphQL\" and .version==\"20260410\") | .id' | xargs -I {} reshapr artifact list -s {}"
+else
+  ARTIFACT_LIST_CMD="reshapr service list | awk '/GitHub GraphQL/ && /20260410/ {print \$1}' | xargs -I {} reshapr artifact list -s {}"
+fi
+
 clear
 
 pei "echo \"Demo #6 - GitHub GraphQL API and Context Control with MCP app prompts\""
@@ -17,7 +24,7 @@ p "This MCP app uses the GitHub GraphQL artifacts and resources attached in the 
 p "the schema import, the custom tool, the prompts, and the app resource."
 p "Let's check it with the 'artifact' command."
 echo
-pei "reshapr service list -o json | jq -r '.[] | select(.name==\"GitHub GraphQL\" and .version==\"20260410\") | .id' | xargs -I {} reshapr artifact list -s {}"
+pei "${ARTIFACT_LIST_CMD}"
 echo
 p "The GitHub GraphQL schema was already imported with a CustomTool 'get_user_with_latest_followers',"
 p "and 'prompts' resources. Check our previous demo on YouTube if you missed it!"
@@ -35,6 +42,6 @@ pei "reshapr attach -f ./apps/github-user-prompts/resources/app.local.yaml"
 echo
 p "Let’s check our artifact list again, as we’ve now added the MCP app resource:"
 echo
-pei "reshapr service list -o json | jq -r '.[] | select(.name==\"GitHub GraphQL\" and .version==\"20260410\") | .id' | xargs -I {} reshapr artifact list -s {}"
+pei "${ARTIFACT_LIST_CMD}"
 echo
 p "Let's check using your LLM or Postman Agent Mode 🎉"

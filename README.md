@@ -24,7 +24,7 @@ https://www.youtube.com/@reShaprio
 - Docker, for running reShapr locally
 - reShapr CLI, installed by demo 00
 - [`pv`](https://www.ivarch.com/programs/pv.shtml) (optional, for simulated typing). Without `pv`, demos automatically fall back to `-d` (`DEMO_MAGIC_OPTS="-n -d"` disables simulated typing explicitly).
-- `jq`, used by demo 06
+- `jq` (optional): demo 06 uses it to filter the artifact list by service, and demo 10 uses it to pretty-print the Inspector output. Without it, demo 06 falls back to `awk` and demo 10 shows raw JSON.
 
 Optional:
 
