@@ -25,7 +25,8 @@
     "demo:07": "bash demos/07-open-meteo-mcpapp/demo.sh",
     "demo:08": "bash demos/08-github-graphql-elicitation-secret/demo.sh",
     "demo:09": "bash demos/09-open-meteo-openapi-keycloak-elicitation/demo.sh",
-    "demo:10": "bash demos/10-petstore-skills/demo.sh"
+    "demo:10": "bash demos/10-petstore-skills/demo.sh",
+    "demo:stop": "bash scripts/stop-local.sh"
   },
   "dependencies": {
     "@modelcontextprotocol/ext-apps": "^1.0.0",

@@ -3,7 +3,26 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "${SCRIPT_DIR}/../../scripts/lib/demo-env.sh"
 
+require_reshapr
+
 PETSTORE_MCP_URL="${RESHAPR_MCP_URL}/mcp/reshapr/swagger-petstore-openapi-3-0-1-0-27-default"
+
+wait_for_petstore_skill() {
+  local deadline=$((SECONDS + 15))
+  while (( SECONDS < deadline )); do
+    if curl -fsS "${PETSTORE_MCP_URL}" \
+      -X POST \
+      -H 'Accept: application/json, text/event-stream' \
+      -H 'Content-Type: application/json' \
+      -H 'MCP-Protocol-Version: 2026-07-28' \
+      -d '{"jsonrpc":"2.0","id":1,"method":"skills/list","params":{}}' 2>/dev/null \
+      | grep -q '"petstore-adoption-desk"'; then
+      return 0
+    fi
+    sleep 1
+  done
+  echo "Timed out waiting for petstore-adoption-desk on ${PETSTORE_MCP_URL}; running inspector anyway." >&2
+}
 
 clear
 
@@ -23,6 +42,7 @@ p "The skill is served from a Git tag of this repository, so no file server is n
 wait
 echo
 pei "reshapr attach -f ./demos/10-petstore-skills/resources/skills.remote.yaml"
+wait_for_petstore_skill
 echo
 p "Now check that the Skill is discoverable and conformant (SEP-2640) with the MCP Inspector."
 echo
