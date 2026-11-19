@@ -3,6 +3,8 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "${SCRIPT_DIR}/../../scripts/lib/demo-env.sh"
 
+require_reshapr
+
 GITHUB_GRAPHQL_MCP_ENDPOINT="${RESHAPR_MCP_URL}/mcp/reshapr/github-graphql-${GITHUB_GRAPHQL_SERVICE_VERSION}-default"
 
 clear

@@ -3,6 +3,8 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "${SCRIPT_DIR}/../../scripts/lib/demo-env.sh"
 
+require_reshapr_cli
+
 clear
 
 p "Demo #1 Setup - run reShapr locally with Docker"

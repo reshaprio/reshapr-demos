@@ -9,25 +9,6 @@ KEYCLOAK_REALM_URL="http://localhost:${KEYCLOAK_HOST_PORT}/realms/3rdparty"
 KEYCLOAK_LOG_DIR="${TMPDIR:-/tmp}"
 KEYCLOAK_LOG="${KEYCLOAK_LOG_DIR%/}/reshapr-demo09-keycloak.log"
 KEYCLOAK_WAIT_SECONDS="${RESHAPR_KEYCLOAK_WAIT_SECONDS:-180}"
-RESHAPR_HEALTH_URL="${RESHAPR_URL%/}/q/health/ready"
-
-require_reshapr() {
-  if ! command -v reshapr >/dev/null 2>&1; then
-    echo "reShapr CLI is not installed." >&2
-    echo "Run the prerequisite demo first:" >&2
-    echo "  ./demos/00-install-cli/demo.sh" >&2
-    exit 1
-  fi
-
-  if ! curl -fsS "${RESHAPR_HEALTH_URL}" >/dev/null 2>&1; then
-    echo "reShapr is not reachable at ${RESHAPR_URL}." >&2
-    echo "Start the local stack first, then rerun this demo." >&2
-    echo "If you missed the prerequisites, run:" >&2
-    echo "  ./demos/00-install-cli/demo.sh" >&2
-    echo "  ./demos/01-run-local/demo.sh" >&2
-    exit 1
-  fi
-}
 
 keycloak_container_state() {
   docker inspect -f '{{.State.Status}}' "${KEYCLOAK_CONTAINER}" 2>/dev/null || true

@@ -3,6 +3,8 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "${SCRIPT_DIR}/../../scripts/lib/demo-env.sh"
 
+require_reshapr
+
 clear
 
 p "Demo #2 Open meteo - import OpenAPI spec and expose it using reShapr"

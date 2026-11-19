@@ -18,8 +18,14 @@ if [[ ! -f "${DEMO_MAGIC}" ]]; then
   exit 1
 fi
 
+if ! command -v pv >/dev/null 2>&1 && [[ " ${DEMO_MAGIC_OPTS} " != *" -d "* ]]; then
+  DEMO_MAGIC_OPTS="${DEMO_MAGIC_OPTS} -d"
+  echo "pv is not installed; running with simulated typing disabled (-d)." >&2
+fi
+
 cd "${RESHAPR_DEMOS_ROOT}" || exit 1
 
+OPTIND=1
 # shellcheck disable=SC1090,SC2086
 . "${DEMO_MAGIC}" ${DEMO_MAGIC_OPTS}
 
@@ -49,5 +55,28 @@ show_file() {
     bat "$@"
   else
     cat "$@"
+  fi
+}
+
+require_reshapr_cli() {
+  if ! command -v reshapr >/dev/null 2>&1; then
+    echo "reShapr CLI is not installed." >&2
+    echo "Run the prerequisite demo first:" >&2
+    echo "  ./demos/00-install-cli/demo.sh" >&2
+    exit 1
+  fi
+}
+
+require_reshapr() {
+  local health_url="${RESHAPR_URL%/}/q/health/ready"
+  require_reshapr_cli
+
+  if ! curl -fsS "${health_url}" >/dev/null 2>&1; then
+    echo "reShapr is not reachable at ${RESHAPR_URL}." >&2
+    echo "Start the local stack first, then rerun this demo." >&2
+    echo "If you missed the prerequisites, run:" >&2
+    echo "  ./demos/00-install-cli/demo.sh" >&2
+    echo "  ./demos/01-run-local/demo.sh" >&2
+    exit 1
   fi
 }

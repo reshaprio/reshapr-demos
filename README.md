@@ -23,7 +23,7 @@ https://www.youtube.com/@reShaprio
 - npm
 - Docker, for running reShapr locally
 - reShapr CLI, installed by demo 00
-- [`pv`](https://www.ivarch.com/programs/pv.shtml) (`brew install pv`), used by `demo-magic` to simulate typing. Without it the demos exit immediately; run them with `DEMO_MAGIC_OPTS="-n -d"` to disable simulated typing instead.
+- [`pv`](https://www.ivarch.com/programs/pv.shtml) (optional, for simulated typing). Without `pv`, demos automatically fall back to `-d` (`DEMO_MAGIC_OPTS="-n -d"` disables simulated typing explicitly).
 - `jq`, used by demo 06
 
 Optional:
@@ -53,6 +53,12 @@ npm run demo:05
 ```
 
 Use direct `demo.sh` execution when presenting or editing a demo. Use npm aliases when following commands from the root README.
+
+Stop the local reShapr stack (and the Demo 09 Keycloak container if running) with:
+
+```sh
+npm run demo:stop
+```
 
 ## Demos
 

@@ -3,6 +3,8 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "${SCRIPT_DIR}/../../scripts/lib/demo-env.sh"
 
+require_reshapr
+
 clear
 
 pei "echo \"Demo #7 - Open-Meteo OpenAPI with MCP app\""
