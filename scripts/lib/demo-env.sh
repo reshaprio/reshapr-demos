@@ -58,6 +58,13 @@ show_file() {
   fi
 }
 
+# Prints " | jq" when jq is available, to append to a command shown with pei.
+jq_pretty() {
+  if command -v jq >/dev/null 2>&1; then
+    printf ' | jq'
+  fi
+}
+
 require_reshapr_cli() {
   if ! command -v reshapr >/dev/null 2>&1; then
     echo "reShapr CLI is not installed." >&2

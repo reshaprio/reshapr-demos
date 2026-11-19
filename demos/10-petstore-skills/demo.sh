@@ -46,7 +46,7 @@ wait_for_petstore_skill
 echo
 p "Now check that the Skill is discoverable and conformant (SEP-2640) with the MCP Inspector."
 echo
-pei "npx -y @modelcontextprotocol/inspector@latest --cli ${PETSTORE_MCP_URL} --transport http --method skills/list --verify"
+pei "npx -y @modelcontextprotocol/inspector@latest --cli ${PETSTORE_MCP_URL} --transport http --method skills/list --verify$(jq_pretty)"
 echo
 p "🎉 The Skill is served next to the tools. Point Claude (or any MCP client that supports skills) at ${PETSTORE_MCP_URL}"
 p "ℹ️ To edit the skill and see your changes without a commit or tag, use skills.local.yaml (see the README)."
