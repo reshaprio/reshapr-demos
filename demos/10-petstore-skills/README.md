@@ -27,7 +27,7 @@ To change the Skill and see your edits without a commit or a tag, serve it from 
 1. Delete the Skills artifact you attached before (`reshapr artifact list -s <serviceId>`, then `reshapr artifact delete <id>`), so the Service has one manifest for this Skill.
 2. Start the file server in a separate terminal: `npm run start:petstore-skills`.
 3. Attach `resources/skills.local.yaml`: `reshapr attach -f ./demos/10-petstore-skills/resources/skills.local.yaml`.
-4. After each edit to a Skill file, run `reshapr attach` again to refresh the cached digests.
+4. After each edit to a Skill file, wait up to 30 seconds: the gateway caches skill files for 30 seconds by default, then fetches them again. If you change the manifest (for example to add a file), run `reshapr attach` again with the same file name.
 
 ## Files
 
